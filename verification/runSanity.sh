@@ -3,4 +3,4 @@ certoraRun pkg/asset-manager-utils/contracts/AaveATokenAssetManager.sol \
   --solc solc7.6 \
   --settings -t=300 \
   --cache balancer_sanity \
-  --staging --msg "Asset Manager sanity"
+  --staging --msg "Asset Manager sanity, no safetransfers"
