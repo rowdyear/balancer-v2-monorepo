@@ -17,11 +17,4 @@ contract AaveAssetManagerHarness is AaveATokenAssetManager {
         IERC20 _stkAave
     ) AaveATokenAssetManager(_vault, _token, _lendingPool, _aToken, _aaveIncentives, _stkAave) {}
 
-    function _getRebalanceFee(
-        uint256 poolCash,
-        uint256 poolManaged,
-        PoolConfig memory config
-    ) internal view override returns (uint256) {
-        return 0;
-    }
 }
