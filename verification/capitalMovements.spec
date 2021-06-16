@@ -15,10 +15,10 @@ rule capital_out_decreases_investments {
     uint256 amount;
     env e;
 
-    // uint256 pre_aum = readAUM();
+    uint256 pre_aum = readAUM();
     capitalOut(e, poolId, amount);
-    assert true;
-    // uint256 post_aum = readAUM();
+    // assert true;
+    uint256 post_aum = readAUM();
 
-    // assert pre_aum >= post_aum, "capital out should reduce the number of managed assets";
+    assert pre_aum >= post_aum, "capital out should reduce the number of managed assets";
 }
