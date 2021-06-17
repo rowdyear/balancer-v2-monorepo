@@ -4,8 +4,11 @@ methods {
     transfer(address, uint256) returns bool envfree => DISPATCHER(true)
     transferFrom(address, address, uint256) returns bool envfree => DISPATCHER(true)
     balanceOf(address) returns uint256 envfree => DISPATCHER(true)
+	withdraw(address, uint256, address) => DISPATCHER(true)
+    deposit(address, uint256, address, uint16) => DISPATCHER(true)
+    mint(address, uint256) => DISPATCHER(true)
+    burn(address, uint256) => DISPATCHER(true)
 
-	withdraw(address, uint256, address) => NONDET
     getPoolTokenInfo(bytes32, address) => NONDET
     readAUM() returns uint256 envfree
 }
@@ -17,8 +20,19 @@ rule capital_out_decreases_investments {
 
     uint256 pre_aum = readAUM();
     capitalOut(e, poolId, amount);
-    // assert true;
     uint256 post_aum = readAUM();
 
     assert pre_aum >= post_aum, "capital out should reduce the number of managed assets";
+}
+
+rule capital_in_increases_investments {
+	bytes32 poolId;
+    uint256 amount;
+    env e;
+
+    uint256 pre_aum = readAUM();
+    capitalIn(e, poolId, amount);
+    uint256 post_aum = readAUM();
+
+    assert pre_aum <= post_aum, "capital out should reduce the number of managed assets";
 }

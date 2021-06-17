@@ -2,7 +2,7 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-contract DummyERC20 {
+contract ERC20 {
     uint256 total_supply;
     mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowances;
@@ -54,5 +54,15 @@ contract DummyERC20 {
         balances[recipient] = add(balances[recipient], amount);
         allowances[sender][msg.sender] = sub(allowances[sender][msg.sender], amount);
         return true;
+    }
+
+    function mint(address recipient, uint256 amount) external {
+        total_supply = add(total_supply, amount);
+        balances[recipient] = add(balances[recipient], amount);
+    }
+
+    function burn(address recipient, uint256 amount) external {
+        total_supply = sub(total_supply, amount);
+        balances[recipient] = sub(balances[recipient], amount);
     }
 }
