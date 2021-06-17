@@ -16,31 +16,20 @@ pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
 interface IAssetManager {
-    struct PoolConfig {
-        uint64 targetPercentage;
-        uint64 upperCriticalPercentage;
-        uint64 lowerCriticalPercentage;
-    }
+    /**
+     * @notice Emitted when asset manager is rebalanced
+     */
+    event Rebalance(bytes32 poolId);
 
     /**
-     * @notice Returns the pool's config
+     * @notice Sets the config
      */
-    function getPoolConfig(bytes32 poolId) external view returns (PoolConfig memory);
-
-    /**
-     * @notice Sets the pool config
-     */
-    function setPoolConfig(bytes32 poolId, PoolConfig calldata config) external;
-
-    /**
-     * @notice Returns the invested balance
-     */
-    function balanceOf(bytes32 poolId) external view returns (uint256);
+    function setConfig(bytes32 poolId, bytes calldata config) external;
 
     /**
      * @return the current assets under management of this asset manager
      */
-    function readAUM() external view returns (uint256);
+    function getAUM(bytes32 poolId) external view returns (uint256);
 
     /**
      * @return poolCash - The up-to-date cash balance of the pool
@@ -73,8 +62,8 @@ interface IAssetManager {
 
     /**
      * @notice Rebalances funds between the pool and the asset manager to maintain target investment percentage.
-     * If the pool is below its critical threshold for the amount invested then calling this will send a small reward
-     * to the sender
+     * @param poolId - the poolId of the pool to be rebalanced
+     * @param force - a boolean representing whether a rebalance should be forced even when the pool is near balance
      */
-    function rebalance(bytes32 poolId) external;
+    function rebalance(bytes32 poolId, bool force) external;
 }
