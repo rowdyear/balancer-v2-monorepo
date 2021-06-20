@@ -4,4 +4,4 @@ certoraRun verification/AaveAssetManagerHarness.sol verification/ERC20.sol verif
   --optimistic_loop \
   --smt_timeout 300 \
   --staging \
-  --msg "all capital movements with mocked pool and ERC20, mint nd burn summarized"
+  --msg "all capital movements with getAUM() instead of readAUM()"

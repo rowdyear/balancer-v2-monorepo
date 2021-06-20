@@ -10,7 +10,7 @@ methods {
     burn(address, uint256) => DISPATCHER(true)
 
     getPoolTokenInfo(bytes32, address) => NONDET
-    readAUM() returns uint256 envfree
+    getAUM() returns uint256 envfree
 }
 
 rule capital_out_decreases_investments {
@@ -18,9 +18,9 @@ rule capital_out_decreases_investments {
     uint256 amount;
     env e;
 
-    uint256 pre_aum = readAUM();
+    uint256 pre_aum = getAUM();
     capitalOut(e, poolId, amount);
-    uint256 post_aum = readAUM();
+    uint256 post_aum = getAUM();
 
     assert pre_aum >= post_aum, "capital out should reduce the number of managed assets";
 }
@@ -30,9 +30,9 @@ rule capital_in_increases_investments {
     uint256 amount;
     env e;
 
-    uint256 pre_aum = readAUM();
+    uint256 pre_aum = getAUM();
     capitalIn(e, poolId, amount);
-    uint256 post_aum = readAUM();
+    uint256 post_aum = getAUM();
 
     assert pre_aum <= post_aum, "capital out should reduce the number of managed assets";
 }
