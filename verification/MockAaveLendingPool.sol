@@ -12,7 +12,7 @@ contract MockAaveLendingPool {
     ) external {
         ERC20 t = ERC20(aTokens[asset]);
         ERC20 a = ERC20(asset);
-        require(t != a);
+        // require(t != a);
         t.mint(address(onBehalfOf), amount);
         a.transferFrom(onBehalfOf, address(this), amount);
     }
@@ -24,7 +24,7 @@ contract MockAaveLendingPool {
     ) external returns (uint256) {
         ERC20 t = ERC20(aTokens[asset]);
         ERC20 a = ERC20(asset); 
-        // require(t != asset);
+        // require(t != a);
         t.burn(to, amount);
         a.transfer(to, amount);
         return amount;
