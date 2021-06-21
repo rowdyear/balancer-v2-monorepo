@@ -4,4 +4,4 @@ certoraRun verification/AaveAssetManagerHarness.sol verification/ERC20A.sol veri
   --optimistic_loop \
   --smt_timeout 300 \
   --staging \
-  --msg "capital movements make sense"
+  --msg "rule single_init sanity"

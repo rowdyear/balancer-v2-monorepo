@@ -15,9 +15,10 @@ methods {
     Harness_capitalOut(uint256) envfree
     Harness_capitalIn(uint256) envfree
     maxInvestableBalance(bytes32) envfree
-    rebalance(bytes32, bool) envfree
+    // rebalance(bytes32, bool) envfree
     aToken() returns address envfree
     pool.aum_token() returns address envfree
+    initialise(bytes32, address) envfree
 }
 
 function validState {
@@ -56,3 +57,11 @@ rule capital_in_increases_investments {
 //     int256 max_inv_b = maxInvestableBalance(poolId);
 //     assert max_inv_b == 0, "after rebalance, max investable balance should be zero";
 // }
+
+rule single_init {
+    bytes32 pool_id;
+    address distributor;
+    initialise(pool_id, distributor);
+    initialise@withrevert(pool_id, distributor);
+    assert lastReverted;
+}
