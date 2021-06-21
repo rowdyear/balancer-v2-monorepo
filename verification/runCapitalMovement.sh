@@ -4,4 +4,4 @@ certoraRun verification/AaveAssetManagerHarness.sol verification/ERC20A.sol veri
   --optimistic_loop \
   --smt_timeout 300 \
   --staging \
-  --msg "rule single_init sanity"
+  --msg "all rules"

@@ -9,6 +9,8 @@ methods {
     mint(address, uint256) => DISPATCHER(true)
     burn(address, uint256) => DISPATCHER(true)
 
+    0x3111e7b3 => NONDET  // IAaveIncentivesController.claimRewards
+    notifyRewardAmount(address, address, uint256) => NONDET
     getPoolTokenInfo(bytes32, address) => NONDET
 
     getAUM(bytes32) returns uint256 envfree
@@ -64,4 +66,20 @@ rule single_init {
     initialise(pool_id, distributor);
     initialise@withrevert(pool_id, distributor);
     assert lastReverted;
+}
+
+rule only_rebalance_can_change_aum {
+    bytes32 poolId;
+    uint256 pre_aum = getAUM(poolId);
+    env e;
+    calldataarg a;
+    method f;
+
+    // Ignore harness functions
+    require f.selector != Harness_capitalOut(uint256).selector;
+    require f.selector != Harness_capitalIn(uint256).selector;
+
+    f(e, a);
+    uint256 post_aum = getAUM(poolId);
+    assert pre_aum != post_aum => f.selector == rebalance(bytes32, bool).selector;
 }
