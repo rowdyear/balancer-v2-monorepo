@@ -5,4 +5,4 @@ certoraRun verification/AaveAssetManagerHarness.sol verification/ERC20A.sol veri
   --smt_timeout 300 \
   --staging \
   --settings -postProcessCounterExamples=true \
-  --msg "all rules, including invariant target_percentage_less_than_95 with sanity"
+  --msg "all rules"

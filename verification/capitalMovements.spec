@@ -18,11 +18,14 @@ methods {
     Harness_capitalIn(uint256) envfree
     maxInvestableBalance(bytes32) envfree
     Harness_getTargetPercentage() envfree
+    Harness_getUpperCriticalPercentage() envfree
+    Harness_getLowerCriticalPercentage() envfree
     rebalance(bytes32, bool) envfree
     aToken() returns address envfree
     pool.aum_token() returns address envfree
     initialise(bytes32, address) envfree
     Harness_getMaxTargetInvestment() envfree
+    Harness_getConf() returns (uint256, uint256, uint256) envfree
 }
 
 // definition MAX_TARGET_PERCENTAGE() returns uint256 = 0.95e18;
@@ -89,3 +92,26 @@ rule only_rebalance_can_change_aum {
 }
 
 invariant target_percentage_less_than_95() Harness_getTargetPercentage() <= Harness_getMaxTargetInvestment()
+
+invariant legal_config() Harness_getUpperCriticalPercentage() >= Harness_getTargetPercentage() && Harness_getTargetPercentage() >= Harness_getLowerCriticalPercentage()
+
+rule only_set_config_changes_config {
+    uint256 init_target_percentage = Harness_getTargetPercentage();
+    uint256 init_upper_percentage = Harness_getUpperCriticalPercentage();
+    uint256 init_lower_percentage = Harness_getLowerCriticalPercentage();
+
+    env e;
+    calldataarg a;
+    method f;
+
+    uint256 fin_target_percentage = Harness_getTargetPercentage();
+    uint256 fin_upper_percentage = Harness_getUpperCriticalPercentage();
+    uint256 fin_lower_percentage = Harness_getLowerCriticalPercentage();
+
+    bool target_changed = (init_target_percentage != fin_target_percentage);
+    bool upper_changed = (init_upper_percentage != fin_upper_percentage);
+    bool lower_changed = (init_lower_percentage != fin_lower_percentage);
+    bool conf_changed = target_changed || upper_changed || lower_changed;
+
+    assert conf_changed => f.selector == setConfig(bytes32, bytes).selector;
+}
