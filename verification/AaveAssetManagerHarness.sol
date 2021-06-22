@@ -25,4 +25,12 @@ contract AaveAssetManagerHarness is AaveATokenAssetManager {
         _capitalIn(amount);
     }
 
+    function Harness_getTargetPercentage() external view returns (uint256) {
+        return _config.targetPercentage;
+    }
+
+    function Harness_getMaxTargetInvestment() external view returns (uint256) {
+        return 0.95e18;
+    }
+
 }

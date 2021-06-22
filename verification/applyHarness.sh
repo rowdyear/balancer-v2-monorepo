@@ -13,3 +13,5 @@ perl -0777 -i -pe 's/vault\.managePoolBalance\(ops\);//g' pkg/asset-manager-util
 # private to internal
 perl -0777 -i -pe 's/_capitalOut\(uint256 amount\) private {/_capitalOut\(uint256 amount\) internal {/g' pkg/asset-manager-utils/contracts/RewardsAssetManager.sol
 perl -0777 -i -pe 's/_capitalIn\(uint256 amount\) private {/_capitalIn\(uint256 amount\) internal {/g' pkg/asset-manager-utils/contracts/RewardsAssetManager.sol
+
+perl -0777 -i -pe 's/InvestmentConfig private _config/InvestmentConfig internal _config/g' pkg/asset-manager-utils/contracts/RewardsAssetManager.sol

@@ -17,11 +17,15 @@ methods {
     Harness_capitalOut(uint256) envfree
     Harness_capitalIn(uint256) envfree
     maxInvestableBalance(bytes32) envfree
-    // rebalance(bytes32, bool) envfree
+    Harness_getTargetPercentage() envfree
+    rebalance(bytes32, bool) envfree
     aToken() returns address envfree
     pool.aum_token() returns address envfree
     initialise(bytes32, address) envfree
+    Harness_getMaxTargetInvestment() envfree
 }
+
+// definition MAX_TARGET_PERCENTAGE() returns uint256 = 0.95e18;
 
 function validState {
     require aToken() == pool.aum_token();
@@ -83,3 +87,5 @@ rule only_rebalance_can_change_aum {
     uint256 post_aum = getAUM(poolId);
     assert pre_aum != post_aum => f.selector == rebalance(bytes32, bool).selector;
 }
+
+invariant target_percentage_less_than_95() Harness_getTargetPercentage() <= Harness_getMaxTargetInvestment()
