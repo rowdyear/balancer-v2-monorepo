@@ -1,5 +1,5 @@
 certoraRun verification/AaveAssetManagerHarness.sol verification/ERC20A.sol verification/ERC20B.sol verification/MockAaveLendingPool.sol \
-  --verify AaveAssetManagerHarness:verification/capitalMovements.spec \
+  --verify AaveAssetManagerHarness:verification/AaveAssetManager.spec \
   --solc solc7.6 \
   --optimistic_loop \
   --smt_timeout 300 \
