@@ -1,6 +1,6 @@
-certoraRun pkg/distributors/contracts/MultiRewards.sol \
-  --verify MultiRewards:verification/sanity.spec \
+certoraRun verification/RewardsDistributorHarness.sol \
+  --verify RewardsDistributorHarness:verification/sanity.spec \
   --solc solc7.6 \
   --settings -t=300 \
   --staging \
-  --msg "Multi Rewards sanity"
+  --msg "RewardsDistributorHarness sanity"

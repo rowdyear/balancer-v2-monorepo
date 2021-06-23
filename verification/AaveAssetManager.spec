@@ -1,6 +1,7 @@
 using MockAaveLendingPool as pool
 
 methods {
+    // ERC20 methods
     transfer(address, uint256) returns bool envfree => DISPATCHER(true)
     transferFrom(address, address, uint256) returns bool envfree => DISPATCHER(true)
     balanceOf(address) returns uint256 envfree => DISPATCHER(true)
@@ -9,23 +10,27 @@ methods {
     mint(address, uint256) => DISPATCHER(true)
     burn(address, uint256) => DISPATCHER(true)
 
+    // summarizing as NONDET
     0x3111e7b3 => NONDET  // IAaveIncentivesController.claimRewards
     notifyRewardAmount(address, address, uint256) => NONDET
     getPoolTokenInfo(bytes32, address) => NONDET
 
+    // envfree contract functions
     getAUM(bytes32) returns uint256 envfree
-    Harness_capitalOut(uint256) envfree
-    Harness_capitalIn(uint256) envfree
     maxInvestableBalance(bytes32) envfree
-    Harness_getTargetPercentage() envfree
-    Harness_getUpperCriticalPercentage() envfree
-    Harness_getLowerCriticalPercentage() envfree
     rebalance(bytes32, bool) envfree
     aToken() returns address envfree
     pool.aum_token() returns address envfree
     initialise(bytes32, address) envfree
+
+    // envfree harness functions
     Harness_getMaxTargetInvestment() envfree
     Harness_getConf() returns (uint256, uint256, uint256) envfree
+    Harness_capitalOut(uint256) envfree
+    Harness_capitalIn(uint256) envfree
+    Harness_getTargetPercentage() envfree
+    Harness_getUpperCriticalPercentage() envfree
+    Harness_getLowerCriticalPercentage() envfree
 }
 
 // definition MAX_TARGET_PERCENTAGE() returns uint256 = 0.95e18;
