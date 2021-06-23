@@ -12,10 +12,8 @@ contract AaveAssetManagerHarness is AaveATokenAssetManager {
         IVault _vault,
         IERC20 _token,
         ILendingPool _lendingPool,
-        IERC20 _aToken,
-        IAaveIncentivesController _aaveIncentives,
-        IERC20 _stkAave
-    ) AaveATokenAssetManager(_vault, _token, _lendingPool, _aToken, _aaveIncentives, _stkAave) {}
+        IAaveIncentivesController _aaveIncentives
+    ) AaveATokenAssetManager(_vault, _token, _lendingPool, _aaveIncentives) {}
 
     function Harness_capitalOut(uint256 amount) public {
         _capitalOut(amount);

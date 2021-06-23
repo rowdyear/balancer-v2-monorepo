@@ -1,4 +1,8 @@
 import "./IERC20.sol";
+import "pkg/asset-manager-utils/contracts/aave/DataTypes.sol";
+
+pragma solidity ^0.7.0;
+pragma experimental ABIEncoderV2;
 
 // contract MockAaveLendingPool is ILendingPool {
 contract MockAaveLendingPool {
