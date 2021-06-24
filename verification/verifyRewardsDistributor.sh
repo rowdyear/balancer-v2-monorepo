@@ -5,5 +5,4 @@ certoraRun verification/RewardsDistributorHarness.sol verification/ERC20A.sol ve
   --smt_timeout 300 \
   --staging \
   --settings -postProcessCounterExamples=true \
-  --rule whitelist_integrity \
-  --msg "rule whitelist_integrity with no length overflow via harness"
+  --msg "all rewards distributor rules"
