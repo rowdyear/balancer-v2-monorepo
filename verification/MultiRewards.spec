@@ -11,6 +11,9 @@ methods {
     // envfreeing MultiRewards functions
     whitelistRewarder(address, address, address) envfree
     isWhitelistedRewarder(address, address, address) envfree
+
+    // envfreeing harness functions
+    Harness_num_whitelisters(address, address) returns uint256 envfree
 }
 
 rule whitelist_is_forever {
@@ -28,11 +31,13 @@ rule whitelist_is_forever {
     assert whitelisted, "there is no way to remove a rewarder from the whitelist";
 }
 
-rule whitelist_integrity() {
+rule whitelist_integrity {
     address pool_token;
     address reward_token;
     address rewarder;
     whitelistRewarder(pool_token, reward_token, rewarder);
+
+    require Harness_num_whitelisters(pool_token, reward_token) > 0; // If the length is zero, we had an overflow
 
     bool whitelisted = isWhitelistedRewarder(pool_token, reward_token, rewarder);
 
