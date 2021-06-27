@@ -10,7 +10,6 @@ methods {
     approve(address, uint256) => DISPATCHER(true)
 
     // envfreeing MultiRewards functions
-    whitelistRewarder(address, address, address) envfree
     isWhitelistedRewarder(address, address, address) envfree
     isReadyToDistribute(address, address, address) envfree
     totalSupply(address) envfree
@@ -37,10 +36,11 @@ rule whitelist_is_forever {
 }
 
 rule whitelist_integrity {
+    env e;
     address pool_token;
     address reward_token;
     address rewarder;
-    whitelistRewarder(pool_token, reward_token, rewarder);
+    whitelistRewarder(e, pool_token, reward_token, rewarder);
 
     require Harness_num_whitelisters(pool_token, reward_token) > 0; // If the length is zero, we had an overflow
 
@@ -150,3 +150,16 @@ rule increasing_balance_of {
             || f.selector == stakeWithPermit(address,uint256,uint256,address,uint8,bytes32,bytes32).selector, 
             "an unexpcted reduction of balance of";
 }
+
+rule future_rewards_never_applicable {
+    address pool_token;
+    address rewarder;
+    address reward_token;
+    env e;
+    uint256 last_time = lastTimeRewardApplicable(e, pool_token, rewarder, reward_token);
+
+    assert e.block.timestamp >= last_time;
+}
+
+// invariant earn_getters_consistency(address pool_token, address account, address reward_token, address rewarder)
+//     totalEarned(pool_token, account, reward_token) >= earned(pool_token, rewarder, account, reward_token)
