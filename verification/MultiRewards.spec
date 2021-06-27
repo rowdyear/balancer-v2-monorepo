@@ -116,3 +116,37 @@ invariant tot_supp_more_than_balance_of(address pool, address account) totalSupp
         require balanceOf(pool, account) + balanceOf(pool, e.msg.sender) <= totalSupply(pool);
     } 
 }
+
+rule reducing_balance_of {
+    address pool_token;
+    address account;
+    uint256 init_balance = balanceOf(pool_token, account);
+
+    env e;
+    calldataarg a;
+    method f;
+    f(e, a);
+
+    uint256 fin_balance = balanceOf(pool_token, account);
+
+    require (fin_balance < init_balance);
+    assert f.selector == exit(address[]).selector || f.selector == unstake(address,uint256).selector, "an unexpcted reduction of balance of";
+}
+
+rule increasing_balance_of {
+    address pool_token;
+    address account;
+    uint256 init_balance = balanceOf(pool_token, account);
+
+    env e;
+    calldataarg a;
+    method f;
+    f(e, a);
+
+    uint256 fin_balance = balanceOf(pool_token, account);
+
+    require (fin_balance > init_balance);
+    assert f.selector == stake(address, uint256).selector || f.selector == stake(address, uint256, address).selector
+            || f.selector == stakeWithPermit(address,uint256,uint256,address,uint8,bytes32,bytes32).selector, 
+            "an unexpcted reduction of balance of";
+}
