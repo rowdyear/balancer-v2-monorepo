@@ -15,6 +15,8 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
+import "@balancer-labs/v2-solidity-utils/contracts/openzeppelin/IERC20.sol";
+
 interface IAssetManager {
     /**
      * @notice Emitted when asset manager is rebalanced
@@ -25,6 +27,11 @@ interface IAssetManager {
      * @notice Sets the config
      */
     function setConfig(bytes32 poolId, bytes calldata config) external;
+
+    /**
+     * @notice Returns the asset manager's token
+     */
+    function getToken() external view returns (IERC20);
 
     /**
      * @return the current assets under management of this asset manager
@@ -47,6 +54,11 @@ interface IAssetManager {
      * @notice Updates the Vault on the value of the pool's investment returns
      */
     function updateBalanceOfPool(bytes32 poolId) external;
+
+    /**
+     * @notice Determines whether the pool should rebalance given the provided balances
+     */
+    function shouldRebalance(uint256 cash, uint256 managed) external view returns (bool);
 
     /**
      * @notice Rebalances funds between the pool and the asset manager to maintain target investment percentage.
