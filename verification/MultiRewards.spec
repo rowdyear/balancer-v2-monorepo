@@ -16,6 +16,7 @@ methods {
 
     // envfreeing harness functions
     Harness_num_whitelisters(address, address) returns uint256 envfree
+    Harness_num_rewarders(address, address) returns uint256 envfree
 }
 
 rule whitelist_is_forever {
@@ -64,6 +65,18 @@ rule whitelist_mutators {
             "the only function that can mutate the whitelist is isWhitelistedRewarder";
 }
 
+rule add_reward_integrity {
+    env e;
+    address pool_token;
+    address reward_token;
+    uint256 duration;
+    addReward(e, pool_token, reward_token, duration);
+
+    require Harness_num_rewarders(pool_token, reward_token) > 0; // If the length is zero, we had an overflow
+
+    assert isReadyToDistribute(pool_token, reward_token, e.msg.sender), "add reward integrity";
+}
+
 rule is_ready_to_distribute_forever {
     address pool_token;
     address reward_token;
@@ -76,4 +89,19 @@ rule is_ready_to_distribute_forever {
     f(e, a);
 
     assert isReadyToDistribute(pool_token, reward_token, rewarder), "once a reward is added, it cannot be removed";
+}
+
+rule only_way_to_distribute_is_add_reward {
+    address pool_token;
+    address reward_token;
+    address rewarder;
+    require !isReadyToDistribute(pool_token, reward_token, rewarder);
+
+    env e;
+    calldataarg a;
+    method f;
+    f(e, a);
+
+    bool can_distribute = isReadyToDistribute(pool_token, reward_token, rewarder);
+    assert can_distribute => f.selector == addReward(address,address,uint256).selector, "The only way to distribute is by adding the reward first";
 }
