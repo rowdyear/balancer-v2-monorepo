@@ -13,6 +13,8 @@ methods {
     whitelistRewarder(address, address, address) envfree
     isWhitelistedRewarder(address, address, address) envfree
     isReadyToDistribute(address, address, address) envfree
+    totalSupply(address) envfree
+    balanceOf(address, address) envfree
 
     // envfreeing harness functions
     Harness_num_whitelisters(address, address) returns uint256 envfree
@@ -104,4 +106,13 @@ rule only_way_to_distribute_is_add_reward {
 
     bool can_distribute = isReadyToDistribute(pool_token, reward_token, rewarder);
     assert can_distribute => f.selector == addReward(address,address,uint256).selector, "The only way to distribute is by adding the reward first";
+}
+
+invariant tot_supp_more_than_balance_of(address pool, address account) totalSupply(pool) >= balanceOf(pool, account) {
+    preserved unstake(address a, uint256 b) with (env e) {
+        require balanceOf(pool, account) + balanceOf(pool, e.msg.sender) <= totalSupply(pool);
+    } 
+    preserved exit(address[] a) with (env e) {
+        require balanceOf(pool, account) + balanceOf(pool, e.msg.sender) <= totalSupply(pool);
+    } 
 }
