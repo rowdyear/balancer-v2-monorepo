@@ -12,7 +12,7 @@ methods {
     // envfreeing MultiRewards functions
     whitelistRewarder(address, address, address) envfree
     isWhitelistedRewarder(address, address, address) envfree
-    isAssetManager(address, address) envfree
+    isReadyToDistribute(address, address, address) envfree
 
     // envfreeing harness functions
     Harness_num_whitelisters(address, address) returns uint256 envfree
@@ -64,17 +64,16 @@ rule whitelist_mutators {
             "the only function that can mutate the whitelist is isWhitelistedRewarder";
 }
 
+rule is_ready_to_distribute_forever {
+    address pool_token;
+    address reward_token;
+    address rewarder;
+    require isReadyToDistribute(pool_token, reward_token, rewarder);
 
-// Rule below fails :( lots of havoced calls...
-// rule asset_manager_irreversible {
-//     address pool;
-//     address rewarder;
-//     require isAssetManager(pool, rewarder);
+    env e;
+    calldataarg a;
+    method f;
+    f(e, a);
 
-//     env e;
-//     calldataarg a;
-//     method f;
-//     f(e, a);
-
-//     assert isAssetManager(pool, rewarder), "asset manager status is irreversible";
-// }
+    assert isReadyToDistribute(pool_token, reward_token, rewarder), "once a reward is added, it cannot be removed";
+}
