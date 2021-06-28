@@ -198,5 +198,41 @@ rule stake_additivity {
     assert first_balance == second_balance, "stake is additive";
 }
 
+rule wasteless_unstake {
+    address pool_token;
+    env e;
+    uint256 init_balance = balanceOf(pool_token, e.msg.sender);
+
+    uint256 amount;
+    unstake(e, pool_token, amount);
+    uint256 fin_balance = balanceOf(pool_token, e.msg.sender);
+
+    assert fin_balance + amount == init_balance, "staked money cannot go to waste";
+}
+
+rule unstake_additivity {
+    address staked_pool_token;
+    address pool_checked;
+    address account_checked;
+    env e;
+
+    uint256 x;
+    uint256 y;
+    uint256 sumXY = x + y;
+
+    storage init_state = lastStorage;
+
+    unstake(e, staked_pool_token, x);
+    unstake(e, staked_pool_token, y);
+
+    uint256 first_balance = balanceOf(pool_checked, account_checked);
+
+    unstake(e, staked_pool_token, sumXY) at init_state;
+    uint256 second_balance = balanceOf(pool_checked, account_checked);
+
+
+    assert first_balance == second_balance, "unstake is additive";
+}
+
 // invariant earn_getters_consistency(address pool_token, address account, address reward_token, address rewarder)
 //     totalEarned(pool_token, account, reward_token) >= earned(pool_token, rewarder, account, reward_token)
