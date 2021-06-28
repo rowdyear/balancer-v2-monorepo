@@ -14,7 +14,6 @@ methods {
     isReadyToDistribute(address, address, address) envfree
     totalSupply(address) envfree
     balanceOf(address, address) envfree
-    stake(address, uint256, address) envfree
 
     // envfreeing harness functions
     Harness_num_whitelisters(address, address) returns uint256 envfree
@@ -130,8 +129,8 @@ rule reducing_balance_of {
 
     uint256 fin_balance = balanceOf(pool_token, account);
 
-    require (fin_balance < init_balance);
-    assert f.selector == exit(address[]).selector || f.selector == unstake(address,uint256).selector, "an unexpcted reduction of balance of";
+    assert (fin_balance < init_balance) => (f.selector == exit(address[]).selector || f.selector == unstake(address,uint256).selector), 
+            "an unexpcted reduction of balance of";
 }
 
 rule increasing_balance_of {
@@ -146,9 +145,9 @@ rule increasing_balance_of {
 
     uint256 fin_balance = balanceOf(pool_token, account);
 
-    require (fin_balance > init_balance);
-    assert f.selector == stake(address, uint256).selector || f.selector == stake(address, uint256, address).selector
-            || f.selector == stakeWithPermit(address,uint256,uint256,address,uint8,bytes32,bytes32).selector, 
+    assert (fin_balance > init_balance) => 
+                (f.selector == stake(address, uint256).selector || f.selector == stake(address, uint256, address).selector
+                || f.selector == stakeWithPermit(address,uint256,uint256,address,uint8,bytes32,bytes32).selector), 
             "an unexpcted reduction of balance of";
 }
 
@@ -163,18 +162,20 @@ rule future_rewards_never_applicable {
 }
 
 rule wasteless_stake {
+    env e;
     address pool_token;
     address account;
     uint256 init_balance = balanceOf(pool_token, account);
 
     uint256 amount;
-    stake(pool_token, amount, account);
+    stake(e, pool_token, amount, account);
     uint256 fin_balance = balanceOf(pool_token, account);
 
     assert fin_balance - init_balance == amount, "staked money cannot go to waste";
 }
 
 rule stake_additivity {
+    env e;
     address staked_pool_token;
     address account_staked;
     address pool_checked;
@@ -186,12 +187,12 @@ rule stake_additivity {
 
     storage init_state = lastStorage;
 
-    stake(staked_pool_token, x, account_staked);
-    stake(staked_pool_token, y, account_staked);
+    stake(e, staked_pool_token, x, account_staked);
+    stake(e, staked_pool_token, y, account_staked);
 
     uint256 first_balance = balanceOf(pool_checked, account_checked);
 
-    stake(staked_pool_token, sumXY, account_staked) at init_state;
+    stake(e, staked_pool_token, sumXY, account_staked) at init_state;
     uint256 second_balance = balanceOf(pool_checked, account_checked);
 
 
