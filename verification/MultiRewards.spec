@@ -14,6 +14,7 @@ methods {
     isReadyToDistribute(address, address, address) envfree
     totalSupply(address) envfree
     balanceOf(address, address) envfree
+    stake(address, uint256, address) envfree
 
     // envfreeing harness functions
     Harness_num_whitelisters(address, address) returns uint256 envfree
@@ -159,6 +160,42 @@ rule future_rewards_never_applicable {
     uint256 last_time = lastTimeRewardApplicable(e, pool_token, rewarder, reward_token);
 
     assert e.block.timestamp >= last_time;
+}
+
+rule wasteless_stake {
+    address pool_token;
+    address account;
+    uint256 init_balance = balanceOf(pool_token, account);
+
+    uint256 amount;
+    stake(pool_token, amount, account);
+    uint256 fin_balance = balanceOf(pool_token, account);
+
+    assert fin_balance - init_balance == amount, "staked money cannot go to waste";
+}
+
+rule stake_additivity {
+    address staked_pool_token;
+    address account_staked;
+    address pool_checked;
+    address account_checked;
+
+    uint256 x;
+    uint256 y;
+    uint256 sumXY = x + y;
+
+    storage init_state = lastStorage;
+
+    stake(staked_pool_token, x, account_staked);
+    stake(staked_pool_token, y, account_staked);
+
+    uint256 first_balance = balanceOf(pool_checked, account_checked);
+
+    stake(staked_pool_token, sumXY, account_staked) at init_state;
+    uint256 second_balance = balanceOf(pool_checked, account_checked);
+
+
+    assert first_balance == second_balance, "stake is additive";
 }
 
 // invariant earn_getters_consistency(address pool_token, address account, address reward_token, address rewarder)
