@@ -151,15 +151,8 @@ rule increasing_balance_of {
             "an unexpcted reduction of balance of";
 }
 
-rule future_rewards_never_applicable {
-    address pool_token;
-    address rewarder;
-    address reward_token;
-    env e;
-    uint256 last_time = lastTimeRewardApplicable(e, pool_token, rewarder, reward_token);
-
-    assert e.block.timestamp >= last_time;
-}
+invariant future_rewards_never_applicable (env e, address pool_token, address rewarder, address reward_token)
+    e.block.timestamp >= lastTimeRewardApplicable(e, pool_token, rewarder, reward_token)
 
 rule wasteless_stake {
     env e;
