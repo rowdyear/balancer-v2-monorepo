@@ -21,7 +21,7 @@ methods {
     rebalance(bytes32, bool) envfree
     aToken() returns address envfree
     pool.aum_token() returns address envfree
-    initialise(bytes32, address) envfree
+    initialize(bytes32, address) envfree
 
     // envfree harness functions
     Harness_getMaxTargetInvestment() envfree
@@ -75,8 +75,8 @@ rule capital_in_increases_investments {
 rule single_init {
     bytes32 pool_id;
     address distributor;
-    initialise(pool_id, distributor);
-    initialise@withrevert(pool_id, distributor);
+    initialize(pool_id, distributor);
+    initialize@withrevert(pool_id, distributor);
     assert lastReverted;
 }
 
