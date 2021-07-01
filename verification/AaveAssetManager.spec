@@ -17,7 +17,6 @@ methods {
 
     // envfree contract functions
     getAUM(bytes32) returns uint256 envfree
-    maxInvestableBalance(bytes32) envfree
     rebalance(bytes32, bool) envfree
     aToken() returns address envfree
     pool.aum_token() returns address envfree
@@ -25,7 +24,6 @@ methods {
 
     // envfree harness functions
     Harness_getMaxTargetInvestment() envfree
-    Harness_getConf() returns (uint256, uint256, uint256) envfree
     Harness_capitalOut(uint256) envfree
     Harness_capitalIn(uint256) envfree
     Harness_getTargetPercentage() envfree
@@ -62,15 +60,6 @@ rule capital_in_increases_investments {
 
     assert pre_aum <= post_aum, "capital in should increase the number of managed assets";
 }
-
-// Rule below uses mulDown...
-// rule rebalance_works {
-//     validState();
-//     bytes32 poolId;
-//     rebalance(poolId, true);
-//     int256 max_inv_b = maxInvestableBalance(poolId);
-//     assert max_inv_b == 0, "after rebalance, max investable balance should be zero";
-// }
 
 rule single_init {
     bytes32 pool_id;
