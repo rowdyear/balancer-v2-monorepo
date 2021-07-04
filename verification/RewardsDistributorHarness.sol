@@ -17,4 +17,12 @@ contract RewardsDistributorHarness is MultiRewards {
     function Harness_num_rewarders(IERC20 pool, IERC20 rewardsToken) external view returns (uint256) {
         return _rewarders[pool][rewardsToken].length();
     }
+
+    function Harness_isReadyToDistribute(
+        IERC20 pool,
+        IERC20 rewardsToken,
+        address rewarder
+    ) public view returns (bool) {
+        return _rewarders[pool][rewardsToken].contains(rewarder);
+    }
 }

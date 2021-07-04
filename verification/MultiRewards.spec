@@ -11,13 +11,13 @@ methods {
 
     // envfreeing MultiRewards functions
     isWhitelistedRewarder(address, address, address) envfree
-    isReadyToDistribute(address, address, address) envfree
     totalSupply(address) envfree
     balanceOf(address, address) envfree
 
     // envfreeing harness functions
     Harness_num_whitelisters(address, address) returns uint256 envfree
     Harness_num_rewarders(address, address) returns uint256 envfree
+    Harness_isReadyToDistribute(address, address, address) envfree
 }
 
 rule whitelist_is_forever {
@@ -76,35 +76,35 @@ rule add_reward_integrity {
 
     require Harness_num_rewarders(pool_token, reward_token) > 0; // If the length is zero, we had an overflow
 
-    assert isReadyToDistribute(pool_token, reward_token, e.msg.sender), "add reward integrity";
+    assert Harness_isReadyToDistribute(pool_token, reward_token, e.msg.sender), "add reward integrity";
 }
 
 rule is_ready_to_distribute_forever {
     address pool_token;
     address reward_token;
     address rewarder;
-    require isReadyToDistribute(pool_token, reward_token, rewarder);
+    require Harness_isReadyToDistribute(pool_token, reward_token, rewarder);
 
     env e;
     calldataarg a;
     method f;
     f(e, a);
 
-    assert isReadyToDistribute(pool_token, reward_token, rewarder), "once a reward is added, it cannot be removed";
+    assert Harness_isReadyToDistribute(pool_token, reward_token, rewarder), "once a reward is added, it cannot be removed";
 }
 
 rule only_way_to_distribute_is_add_reward {
     address pool_token;
     address reward_token;
     address rewarder;
-    require !isReadyToDistribute(pool_token, reward_token, rewarder);
+    require !Harness_isReadyToDistribute(pool_token, reward_token, rewarder);
 
     env e;
     calldataarg a;
     method f;
     f(e, a);
 
-    bool can_distribute = isReadyToDistribute(pool_token, reward_token, rewarder);
+    bool can_distribute = Harness_isReadyToDistribute(pool_token, reward_token, rewarder);
     assert can_distribute => f.selector == addReward(address,address,uint256).selector, "The only way to distribute is by adding the reward first";
 }
 
@@ -227,6 +227,3 @@ rule unstake_additivity {
 
     assert first_balance == second_balance, "unstake is additive";
 }
-
-// invariant earn_getters_consistency(address pool_token, address account, address reward_token, address rewarder)
-//     totalEarned(pool_token, account, reward_token) >= earned(pool_token, rewarder, account, reward_token)
