@@ -20,4 +20,3 @@ perl -0777 -i -pe 's/InvestmentConfig private _config/InvestmentConfig internal 
 perl -0777 -i -pe 's/private _whitelist/internal _whitelist/g' pkg/distributors/contracts/MultiRewards.sol
 perl -0777 -i -pe 's/private _rewarders/internal _rewarders/g' pkg/distributors/contracts/MultiRewards.sol
 perl -0777 -i -pe 's/length\(AddressSet storage set\) internal view/length\(AddressSet storage set\) external view/g' pkg/solidity-utils/contracts/openzeppelin/EnumerableSet.sol
-
