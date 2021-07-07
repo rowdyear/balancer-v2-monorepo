@@ -10,61 +10,61 @@ methods {
     approve(address, uint256) => DISPATCHER(true)
 
     // envfreeing MultiRewards functions
-    isWhitelistedRewarder(address, address, address) envfree
+    isAllowlistedRewarder(address, address, address) envfree
     totalSupply(address) envfree
     balanceOf(address, address) envfree
 
     // envfreeing harness functions
-    Harness_num_whitelisters(address, address) returns uint256 envfree
+    // Harness_num_whitelisters(address, address) returns uint256 envfree
     Harness_num_rewarders(address, address) returns uint256 envfree
     Harness_isReadyToDistribute(address, address, address) envfree
 }
 
-rule whitelist_is_forever {
+rule allowlist_is_forever {
     address pool_token;
     address reward_token;
     address rewarder;
-    require isWhitelistedRewarder(pool_token, reward_token, rewarder);
+    require isAllowlistedRewarder(pool_token, reward_token, rewarder);
 
     env e;
     calldataarg a;
     method f;
     f(e, a);
 
-    bool whitelisted = isWhitelistedRewarder(pool_token, reward_token, rewarder);
-    assert whitelisted, "there is no way to remove a rewarder from the whitelist";
+    bool allowlisted = isAllowlistedRewarder(pool_token, reward_token, rewarder);
+    assert allowlisted, "there is no way to remove a rewarder from the whitelist";
 }
 
-rule whitelist_integrity {
+rule allowlist_integrity {
     env e;
     address pool_token;
     address reward_token;
     address rewarder;
-    whitelistRewarder(e, pool_token, reward_token, rewarder);
+    allowlistRewarder(e, pool_token, reward_token, rewarder);
 
-    require Harness_num_whitelisters(pool_token, reward_token) > 0; // If the length is zero, we had an overflow
+    // require Harness_num_whitelisters(pool_token, reward_token) > 0; // If the length is zero, we had an overflow
 
-    bool whitelisted = isWhitelistedRewarder(pool_token, reward_token, rewarder);
+    bool allowlisted = isAllowlistedRewarder(pool_token, reward_token, rewarder);
 
-    assert whitelisted, "whitelistRewarder did not work properly";
+    assert allowlisted, "allowlistRewarder did not work properly";
 }
 
 
-rule whitelist_mutators {
+rule allowlist_mutators {
     address pool_token;
     address reward_token;
     address rewarder;
-    bool init = isWhitelistedRewarder(pool_token, reward_token, rewarder);
+    bool init = isAllowlistedRewarder(pool_token, reward_token, rewarder);
 
     env e;
     calldataarg a;
     method f;
     f(e, a);
 
-    bool fin = isWhitelistedRewarder(pool_token, reward_token, rewarder);
+    bool fin = isAllowlistedRewarder(pool_token, reward_token, rewarder);
 
-    assert fin != init => f.selector == whitelistRewarder(address, address, address).selector,
-            "the only function that can mutate the whitelist is isWhitelistedRewarder";
+    assert fin != init => f.selector == allowlistRewarder(address, address, address).selector,
+            "the only function that can mutate the allowlist is isAllowlistedRewarder";
 }
 
 rule add_reward_integrity {

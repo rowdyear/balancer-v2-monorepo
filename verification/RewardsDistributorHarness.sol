@@ -10,9 +10,9 @@ contract RewardsDistributorHarness is MultiRewards {
     
     constructor(IVault _vault) MultiRewards(_vault){}
 
-    function Harness_num_whitelisters(IERC20 pool, IERC20 rewardsToken) external view returns (uint256) {
-        return _whitelist[pool][rewardsToken].length();
-    }
+    // function Harness_num_whitelisters(IERC20 pool, IERC20 rewardsToken) external view returns (uint256) {
+    //     return _allowlist[pool][rewardsToken].length();
+    // }
 
     function Harness_num_rewarders(IERC20 pool, IERC20 rewardsToken) external view returns (uint256) {
         return _rewarders[pool][rewardsToken].length();

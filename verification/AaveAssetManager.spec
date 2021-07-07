@@ -69,7 +69,7 @@ rule single_init {
     assert lastReverted;
 }
 
-rule only_rebalance_can_change_aum {
+rule aum_mutators {
     bytes32 poolId;
     uint256 pre_aum = getAUM(poolId);
     env e;
@@ -82,7 +82,7 @@ rule only_rebalance_can_change_aum {
 
     f(e, a);
     uint256 post_aum = getAUM(poolId);
-    assert pre_aum != post_aum => f.selector == rebalance(bytes32, bool).selector;
+    assert pre_aum != post_aum => f.selector == rebalance(bytes32, bool).selector || f.selector == capitalOut(bytes32,uint256).selector;
 }
 
 invariant target_percentage_less_than_95() Harness_getTargetPercentage() <= Harness_getMaxTargetInvestment()
