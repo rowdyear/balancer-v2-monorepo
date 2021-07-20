@@ -31,7 +31,7 @@ methods {
     Harness_getLowerCriticalPercentage() envfree
 }
 
-// definition MAX_TARGET_PERCENTAGE() returns uint256 = 0.95e18;
+// definition MAX_TARGET_PERCENTAGE() returns uint256 = 1e18;
 
 function validState {
     require aToken() == pool.aum_token();
@@ -85,7 +85,7 @@ rule aum_mutators {
     assert pre_aum != post_aum => f.selector == rebalance(bytes32, bool).selector || f.selector == capitalOut(bytes32,uint256).selector;
 }
 
-invariant target_percentage_less_than_95() Harness_getTargetPercentage() <= Harness_getMaxTargetInvestment()
+invariant target_percentage_less_than_one() Harness_getTargetPercentage() <= Harness_getMaxTargetInvestment()
 
 invariant legal_config() Harness_getUpperCriticalPercentage() >= Harness_getTargetPercentage() && Harness_getTargetPercentage() >= Harness_getLowerCriticalPercentage()
 

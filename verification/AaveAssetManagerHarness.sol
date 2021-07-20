@@ -36,7 +36,7 @@ contract AaveAssetManagerHarness is AaveATokenAssetManager {
     }
 
     function Harness_getMaxTargetInvestment() external view returns (uint256) {
-        return 0.95e18;
+        return 1e18;
     }
 
 }
