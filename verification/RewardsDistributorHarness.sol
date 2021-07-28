@@ -25,4 +25,12 @@ contract RewardsDistributorHarness is MultiRewards {
     ) public view returns (bool) {
         return _rewarders[pool][rewardsToken].contains(rewarder);
     }
+
+    function Harness_getLastUpdateTime (
+        IERC20 pool,
+        address rewarder,
+        IERC20 rewardsToken
+    ) public view returns (uint256) {
+        rewardData[pool][rewarder][rewardsToken].lastUpdateTime;
+    }
 }

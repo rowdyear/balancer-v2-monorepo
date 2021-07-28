@@ -1,8 +1,8 @@
 methods {
     // ERC20 methods
-    transfer(address, uint256) returns bool envfree => DISPATCHER(true)
-    transferFrom(address, address, uint256) returns bool envfree => DISPATCHER(true)
-    balanceOf(address) returns uint256 envfree => DISPATCHER(true)
+    transfer(address, uint256) returns bool => DISPATCHER(true)
+    transferFrom(address, address, uint256) returns bool => DISPATCHER(true)
+    balanceOf(address) returns uint256 => DISPATCHER(true)
 	withdraw(address, uint256, address) => DISPATCHER(true)
     deposit(address, uint256, address, uint16) => DISPATCHER(true)
     mint(address, uint256) => DISPATCHER(true)
@@ -15,9 +15,9 @@ methods {
     balanceOf(address, address) envfree
 
     // envfreeing harness functions
-    // Harness_num_whitelisters(address, address) returns uint256 envfree
     Harness_num_rewarders(address, address) returns uint256 envfree
     Harness_isReadyToDistribute(address, address, address) envfree
+    Harness_getLastUpdateTime(address, address, address) envfree
 }
 
 rule allowlist_is_forever {
@@ -32,7 +32,7 @@ rule allowlist_is_forever {
     f(e, a);
 
     bool allowlisted = isAllowlistedRewarder(pool_token, reward_token, rewarder);
-    assert allowlisted, "there is no way to remove a rewarder from the whitelist";
+    assert allowlisted, "there is no way to remove a rewarder from the allowlist";
 }
 
 rule allowlist_integrity {
@@ -41,8 +41,6 @@ rule allowlist_integrity {
     address reward_token;
     address rewarder;
     allowlistRewarder(e, pool_token, reward_token, rewarder);
-
-    // require Harness_num_whitelisters(pool_token, reward_token) > 0; // If the length is zero, we had an overflow
 
     bool allowlisted = isAllowlistedRewarder(pool_token, reward_token, rewarder);
 
@@ -153,6 +151,9 @@ rule increasing_balance_of {
 
 invariant future_rewards_never_applicable (env e, address pool_token, address rewarder, address reward_token)
     e.block.timestamp >= lastTimeRewardApplicable(e, pool_token, rewarder, reward_token)
+
+invariant applicable_rewards_greater_equal_to_last_update_time (env e, address pool_token, address rewarder, address reward_token)
+    lastTimeRewardApplicable(e, pool_token, rewarder, reward_token) >= Harness_getLastUpdateTime(pool_token, rewarder, reward_token)
 
 rule wasteless_stake {
     env e;
