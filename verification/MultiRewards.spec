@@ -144,7 +144,7 @@ rule increasing_balance_of {
     uint256 fin_balance = balanceOf(pool_token, account);
 
     assert (fin_balance > init_balance) => 
-                (f.selector == stake(address, uint256).selector || f.selector == stake(address, uint256, address).selector
+                (f.selector == stake(address, uint256).selector || f.selector == stakeFor(address, uint256, address).selector
                 || f.selector == stakeWithPermit(address,uint256,uint256,address,uint8,bytes32,bytes32).selector), 
             "an unexpcted reduction of balance of";
 }
@@ -162,7 +162,7 @@ rule wasteless_stake {
     uint256 init_balance = balanceOf(pool_token, account);
 
     uint256 amount;
-    stake(e, pool_token, amount, account);
+    stakeFor(e, pool_token, amount, account);
     uint256 fin_balance = balanceOf(pool_token, account);
 
     assert fin_balance - init_balance == amount, "staked money cannot go to waste";
@@ -181,12 +181,12 @@ rule stake_additivity {
 
     storage init_state = lastStorage;
 
-    stake(e, staked_pool_token, x, account_staked);
-    stake(e, staked_pool_token, y, account_staked);
+    stakeFor(e, staked_pool_token, x, account_staked);
+    stakeFor(e, staked_pool_token, y, account_staked);
 
     uint256 first_balance = balanceOf(pool_checked, account_checked);
 
-    stake(e, staked_pool_token, sumXY, account_staked) at init_state;
+    stakeFor(e, staked_pool_token, sumXY, account_staked) at init_state;
     uint256 second_balance = balanceOf(pool_checked, account_checked);
 
 
