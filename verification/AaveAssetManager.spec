@@ -33,12 +33,7 @@ methods {
 
 // definition MAX_TARGET_PERCENTAGE() returns uint256 = 1e18;
 
-function validState {
-    require aToken() == pool.aum_token();
-}
-
 rule capital_out_decreases_investments {
-    validState();
     uint256 amount;
     bytes32 poolId;
 
@@ -50,7 +45,6 @@ rule capital_out_decreases_investments {
 }
 
 rule capital_in_increases_investments {
-    validState();
     uint256 amount;
     bytes32 poolId;
 
