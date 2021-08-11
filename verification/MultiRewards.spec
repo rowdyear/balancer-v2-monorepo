@@ -107,10 +107,13 @@ rule only_way_to_distribute_is_add_reward {
 }
 
 invariant tot_supp_more_than_balance_of(address pool, address account) totalSupply(pool) >= balanceOf(pool, account) {
-    preserved unstake(address a, uint256 b) with (env e) {
+    preserved unstake(address _, uint256 _, address _) with (env e) {
         require account == e.msg.sender;
     } 
-    preserved exit(address[] a) with (env e) {
+    preserved exit(address[] _) with (env e) {
+        require account == e.msg.sender;
+    }
+    preserved exitWithCallback(address[] _, address _, bytes _) with (env e) {
         require account == e.msg.sender;
     }
 }
@@ -127,7 +130,9 @@ rule reducing_balance_of {
 
     uint256 fin_balance = balanceOf(pool_token, account);
 
-    assert (fin_balance < init_balance) => (f.selector == exit(address[]).selector || f.selector == unstake(address,uint256).selector), 
+    assert (fin_balance < init_balance) => (f.selector == exit(address[]).selector || 
+            f.selector == unstake(address,uint256,address).selector || 
+            f.selector == exitWithCallback(address[],address,bytes).selector), 
             "an unexpcted reduction of balance of";
 }
 
@@ -153,7 +158,38 @@ invariant future_rewards_never_applicable (env e, address pool_token, address re
     e.block.timestamp >= lastTimeRewardApplicable(e, pool_token, rewarder, reward_token)
 
 invariant applicable_rewards_greater_equal_to_last_update_time (env e, address pool_token, address rewarder, address reward_token)
-    lastTimeRewardApplicable(e, pool_token, rewarder, reward_token) >= Harness_getLastUpdateTime(pool_token, rewarder, reward_token)
+    lastTimeRewardApplicable(e, pool_token, rewarder, reward_token) >= Harness_getLastUpdateTime(pool_token, rewarder, reward_token) {
+        preserved unstake(address _, uint256 _, address _) with (env e2) {
+            require e2.block.timestamp == e.block.timestamp;
+        }
+        preserved stake(address _, uint256 _) with (env e2) {
+            require e2.block.timestamp == e.block.timestamp;
+        }
+        preserved stakeFor(address _, uint256 _, address _) with (env e2) {
+            require e2.block.timestamp == e.block.timestamp;
+        }
+        preserved stakeWithPermit(address _, uint256 _, uint256 _, address _, uint8 _, bytes32 _, bytes32 _) with (env e2) {
+            require e2.block.timestamp == e.block.timestamp;
+        }
+        preserved getReward(address[] _) with (env e2) {
+            require e2.block.timestamp == e.block.timestamp;
+        }
+        preserved exit(address[] _) with (env e2) {
+            require e2.block.timestamp == e.block.timestamp;
+        }
+        preserved exitWithCallback(address[] _, address _, bytes _) with (env e2) {
+            require e2.block.timestamp == e.block.timestamp;
+        }
+        preserved getRewardAsInternalBalance(address[] _) with (env e2) {
+            require e2.block.timestamp == e.block.timestamp;
+        }
+        preserved getRewardWithCallback(address[] _, address _, bytes _) with (env e2) {
+            require e2.block.timestamp == e.block.timestamp;
+        }
+        preserved notifyRewardAmount(address _, address _, uint256 _) with (env e2) {
+            require e2.block.timestamp == e.block.timestamp;
+        }
+    } 
 
 rule wasteless_stake {
     env e;
@@ -195,11 +231,12 @@ rule stake_additivity {
 
 rule wasteless_unstake {
     address pool_token;
+    address recipient;
     env e;
     uint256 init_balance = balanceOf(pool_token, e.msg.sender);
 
     uint256 amount;
-    unstake(e, pool_token, amount);
+    unstake(e, pool_token, amount, recipient);
     uint256 fin_balance = balanceOf(pool_token, e.msg.sender);
 
     assert fin_balance + amount == init_balance, "staked money cannot go to waste";
@@ -209,6 +246,7 @@ rule unstake_additivity {
     address staked_pool_token;
     address pool_checked;
     address account_checked;
+    address recipient;
     env e;
 
     uint256 x;
@@ -217,12 +255,12 @@ rule unstake_additivity {
 
     storage init_state = lastStorage;
 
-    unstake(e, staked_pool_token, x);
-    unstake(e, staked_pool_token, y);
+    unstake(e, staked_pool_token, x, recipient);
+    unstake(e, staked_pool_token, y, recipient);
 
     uint256 first_balance = balanceOf(pool_checked, account_checked);
 
-    unstake(e, staked_pool_token, sumXY) at init_state;
+    unstake(e, staked_pool_token, sumXY, recipient) at init_state;
     uint256 second_balance = balanceOf(pool_checked, account_checked);
 
 

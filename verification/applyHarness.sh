@@ -10,8 +10,11 @@ perl -0777 -i -pe 's/using SafeERC20 for IERC20;//g' pkg/distributors/contracts/
 # virtualizing functions
 perl -0777 -i -pe 's/\) internal pure returns \(uint256\) {/\) internal view virtual returns \(uint256\) {/g' pkg/asset-manager-utils/contracts/RewardsAssetManager.sol
 
-# removing irrelevant function
+# removing irrelevant functions
 perl -0777 -i -pe 's/getVault\(\)\.managePoolBalance\(ops\);//g' pkg/asset-manager-utils/contracts/RewardsAssetManager.sol
+perl -0777 -i -pe 's/getVault\(\)\.manageUserBalance\(ops\);//g' pkg/distributors/contracts/MultiRewards.sol
+perl -0777 -i -pe 's/callbackContract\.callback\(callbackData\);//g' pkg/distributors/contracts/MultiRewards.sol
+
 
 # private to internal
 perl -0777 -i -pe 's/_capitalOut\(uint256 amount\) private {/_capitalOut\(uint256 amount\) internal {/g' pkg/asset-manager-utils/contracts/RewardsAssetManager.sol

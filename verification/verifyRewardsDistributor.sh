@@ -3,6 +3,6 @@ certoraRun verification/RewardsDistributorHarness.sol verification/ERC20A.sol ve
   --solc solc7.6 \
   --optimistic_loop \
   --smt_timeout 300 \
-  --staging \
   --settings -postProcessCounterExamples=true \
+  --cloud \
   --msg "all rules"

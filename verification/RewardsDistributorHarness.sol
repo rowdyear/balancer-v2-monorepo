@@ -31,6 +31,6 @@ contract RewardsDistributorHarness is MultiRewards {
         address rewarder,
         IERC20 rewardsToken
     ) public view returns (uint256) {
-        rewardData[pool][rewarder][rewardsToken].lastUpdateTime;
+        return rewardData[pool][rewarder][rewardsToken].lastUpdateTime;
     }
 }
