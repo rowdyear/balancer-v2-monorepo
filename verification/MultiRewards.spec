@@ -1,3 +1,5 @@
+using ERC20A as erc20
+
 methods {
     // ERC20 methods
     transfer(address, uint256) returns bool => DISPATCHER(true)
@@ -18,6 +20,8 @@ methods {
     Harness_num_rewarders(address, address) returns uint256 envfree
     Harness_isReadyToDistribute(address, address, address) envfree
     Harness_getLastUpdateTime(address, address, address) envfree
+
+    erc20.transferFrom(address, address, uint256) envfree
 }
 
 rule allowlist_is_forever {
@@ -265,4 +269,20 @@ rule unstake_additivity {
 
 
     assert first_balance == second_balance, "unstake is additive";
+}
+
+rule airdrop_doesnt_affect_balances {
+    address pool_token;
+    address account;
+    uint256 init_balance = balanceOf(pool_token, account);
+
+    // airdrop to the pool
+    address sender;
+    uint256 amount;
+    require amount > 0;
+    erc20.transferFrom(sender, currentContract, amount);
+
+    uint256 fin_balance = balanceOf(pool_token, account);
+
+    assert init_balance == fin_balance, "airdrop shouldn't affect the balance of any user in any token";
 }
