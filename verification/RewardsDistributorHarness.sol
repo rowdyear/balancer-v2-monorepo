@@ -33,4 +33,54 @@ contract RewardsDistributorHarness is MultiRewards {
     ) public view returns (uint256) {
         return rewardData[pool][rewarder][rewardsToken].lastUpdateTime;
     }
+
+    function Harness_getRewardRate (
+        IERC20 pool,
+        address rewarder,
+        IERC20 rewardsToken
+    ) public view returns (uint256) {
+        return rewardData[pool][rewarder][rewardsToken].rewardRate;
+    }
+
+    function Harness_getRewardDuration (
+        IERC20 pool,
+        address rewarder,
+        IERC20 rewardsToken
+    ) public view returns (uint256) {
+        return rewardData[pool][rewarder][rewardsToken].rewardsDuration;
+    }
+
+    function Harness_getUnpaidRewards (
+        IERC20 pool,
+        address account,
+        IERC20 rewardsToken
+    ) public view returns (uint256) {
+        return unpaidRewards[pool][account][rewardsToken];
+    }
+
+    function Harness_getPaidRewards (
+        IERC20 pool,
+        address rewarder,
+        address account,
+        IERC20 rewardsToken
+    ) public view returns (uint256) {
+        return userRewardPerTokenPaid[pool][rewarder][account][rewardsToken];
+    }
+
+    function Harness_getRewardPerTokenStored (
+        IERC20 pool,
+        address rewarder,
+        IERC20 rewardsToken
+    ) public view returns (uint256) {
+        return rewardData[pool][rewarder][rewardsToken].rewardPerTokenStored;
+    }
+
+    function Harness_getRewardPeriodFinish (
+        IERC20 pool,
+        address rewarder,
+        IERC20 rewardsToken
+    ) public view returns (uint256) {
+        return rewardData[pool][rewarder][rewardsToken].periodFinish;
+    }
+
 }

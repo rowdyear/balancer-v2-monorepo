@@ -15,14 +15,18 @@ methods {
     isAllowlistedRewarder(address, address, address) envfree
     totalSupply(address) envfree
     balanceOf(address, address) envfree
-    totalEarned(address, address, address) envfree
 
     // envfreeing harness functions
     Harness_num_rewarders(address, address) returns uint256 envfree
     Harness_isReadyToDistribute(address, address, address) envfree
     Harness_getLastUpdateTime(address, address, address) envfree
+    Harness_getRewardRate(address, address, address) envfree
+    Harness_getRewardDuration(address, address, address) envfree
+    Harness_getUnpaidRewards(address, address, address) envfree
+    Harness_getPaidRewards(address, address, address, address) envfree
+    Harness_getRewardPerTokenStored(address, address, address) envfree
+    Harness_getRewardPeriodFinish(address, address, address) envfree
 
-    erc20.transferFrom(address, address, uint256) envfree
 }
 
 rule allowlist_is_forever {
@@ -272,17 +276,20 @@ rule unstake_additivity {
     assert first_balance == second_balance, "unstake is additive";
 }
 
+/////////////////////////// Airdrop rules //////////////////////////////////////////////////////////////////////
+
 rule airdrop_doesnt_affect_balances {
     address pool_token;
     address account;
     uint256 init_balance = balanceOf(pool_token, account);
 
     // airdrop to the pool
+    env e;
     address sender;
     require sender != currentContract;
     uint256 amount;
     require amount > 0;
-    erc20.transferFrom(sender, currentContract, amount);
+    erc20.transferFrom(e, sender, currentContract, amount);
 
     uint256 fin_balance = balanceOf(pool_token, account);
 
@@ -294,11 +301,12 @@ rule airdrop_doesnt_affect_total_supply_of_pool_tokens {
     uint256 init_balance = totalSupply(pool_token);
 
     // airdrop to the pool
+    env e;
     address sender;
     require sender != currentContract;
     uint256 amount;
     require amount > 0;
-    erc20.transferFrom(sender, currentContract, amount);
+    erc20.transferFrom(e, sender, currentContract, amount);
 
     uint256 fin_balance = totalSupply(pool_token);
 
@@ -311,15 +319,35 @@ rule airdrop_doesnt_add_rewarders {
     uint256 init_num_rewards = Harness_num_rewarders(pool_token, reward_token);
 
     // airdrop to the pool
+    env e;
     address sender;
     require sender != currentContract;
     uint256 amount;
     require amount > 0;
-    erc20.transferFrom(sender, currentContract, amount);
+    erc20.transferFrom(e, sender, currentContract, amount);
 
     uint256 fin_num_rewards = Harness_num_rewarders(pool_token, reward_token);
 
     assert init_num_rewards == fin_num_rewards, "airdrop shouldn't add a rewarder";
+}
+
+rule airdrop_doesnt_grant_rewarder_privileges {
+    address pool_token;
+    address reward_token;
+    address rewarder;
+    bool init_privilege = Harness_isReadyToDistribute(pool_token, reward_token, rewarder);
+
+    // airdrop to the pool
+    env e;
+    address sender;
+    require sender != currentContract;
+    uint256 amount;
+    require amount > 0;
+    erc20.transferFrom(e, sender, currentContract, amount);
+
+    bool fin_privilege = Harness_isReadyToDistribute(pool_token, reward_token, rewarder);
+
+    assert init_privilege == fin_privilege, "airdrop shouldn't change rewarder privileges";
 }
 
 rule airdrop_doesnt_update_time {
@@ -329,13 +357,129 @@ rule airdrop_doesnt_update_time {
     uint256 init_last_update_time = Harness_getLastUpdateTime(pool_token, reward_token, rewarder);
 
     // airdrop to the pool
+    env e;
     address sender;
     require sender != currentContract;
     uint256 amount;
     require amount > 0;
-    erc20.transferFrom(sender, currentContract, amount);
+    erc20.transferFrom(e, sender, currentContract, amount);
 
     uint256 fin_last_update_time = Harness_getLastUpdateTime(pool_token, reward_token, rewarder);
 
     assert init_last_update_time == fin_last_update_time, "airdrop shouldn't change the last update time";
+}
+
+rule airdrop_doesnt_update_rate {
+    address pool_token;
+    address reward_token;
+    address rewarder;
+    uint256 init_rate = Harness_getRewardRate(pool_token, reward_token, rewarder);
+
+    // airdrop to the pool
+    env e;
+    address sender;
+    require sender != currentContract;
+    uint256 amount;
+    require amount > 0;
+    erc20.transferFrom(e, sender, currentContract, amount);
+
+    uint256 fin_rate = Harness_getRewardRate(pool_token, reward_token, rewarder);
+
+    assert init_rate == fin_rate, "airdrop shouldn't change any reward rate";
+}
+
+rule airdrop_doesnt_update_duration {
+    address pool_token;
+    address reward_token;
+    address rewarder;
+    uint256 init_duration = Harness_getRewardDuration(pool_token, reward_token, rewarder);
+
+    // airdrop to the pool
+    env e;
+    address sender;
+    require sender != currentContract;
+    uint256 amount;
+    require amount > 0;
+    erc20.transferFrom(e, sender, currentContract, amount);
+
+    uint256 fin_duration = Harness_getRewardDuration(pool_token, reward_token, rewarder);
+
+    assert init_duration == fin_duration, "airdrop shouldn't change any reward duration";
+}
+
+rule airdrop_doesnt_update_unpaid_rewards {
+    address pool_token;
+    address account;
+    address reward_token;
+    uint256 init_rewards = Harness_getUnpaidRewards(pool_token, account, reward_token);
+
+    // airdrop to the pool
+    env e;
+    address sender;
+    require sender != currentContract;
+    uint256 amount;
+    require amount > 0;
+    erc20.transferFrom(e, sender, currentContract, amount);
+
+    uint256 fin_rewards = Harness_getUnpaidRewards(pool_token, account, reward_token);
+
+    assert init_rewards == fin_rewards, "airdrop shouldn't change unpaid rewards";
+}
+
+rule airdrop_doesnt_update_paid_rewards {
+    address pool_token;
+    address reward_token;
+    address rewarder;
+    address account;
+    uint256 init_rewards = Harness_getPaidRewards(pool_token, rewarder, account, reward_token);
+
+    // airdrop to the pool
+    env e;
+    address sender;
+    require sender != currentContract;
+    uint256 amount;
+    require amount > 0;
+    erc20.transferFrom(e, sender, currentContract, amount);
+
+    uint256 fin_rewards = Harness_getPaidRewards(pool_token, rewarder, account, reward_token);
+
+    assert init_rewards == fin_rewards, "airdrop shouldn't change paid rewards";
+}
+
+rule airdrop_doesnt_update_reward_per_token {
+    address pool_token;
+    address rewarder;
+    address reward_token;
+    uint256 init_ratio = Harness_getRewardPerTokenStored(pool_token, rewarder, reward_token);
+
+    // airdrop to the pool
+    env e;
+    address sender;
+    require sender != currentContract;
+    uint256 amount;
+    require amount > 0;
+    erc20.transferFrom(e, sender, currentContract, amount);
+
+    uint256 fin_ratio = Harness_getRewardPerTokenStored(pool_token, rewarder, reward_token);
+
+    assert init_ratio == fin_ratio, "airdrop shouldn't change reward per token ratios";
+}
+
+rule airdrop_doesnt_update_reward_period_finish {
+    address pool_token;
+    address rewarder;
+    address reward_token;
+    uint256 init_finish = Harness_getRewardPeriodFinish(pool_token, rewarder, reward_token);
+
+    // airdrop to the pool
+    env e;
+    address sender;
+    require sender != currentContract;
+    uint256 amount;
+    require amount > 0;
+    erc20.transferFrom(e, sender, currentContract, amount);
+
+    uint256 fin_finish = Harness_getRewardPeriodFinish(pool_token, rewarder, reward_token);
+
+    assert init_finish == fin_finish, "airdrop shouldn't change period finish of any rewards";
 }
