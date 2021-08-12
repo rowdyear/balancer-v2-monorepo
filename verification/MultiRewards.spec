@@ -286,3 +286,18 @@ rule airdrop_doesnt_affect_balances {
 
     assert init_balance == fin_balance, "airdrop shouldn't affect the balance of any user in any token";
 }
+
+rule airdrop_doesnt_affect_total_supply_of_pool_tokens {
+    address pool_token;
+    uint256 init_balance = totalSupply(pool_token);
+
+    // airdrop to the pool
+    address sender;
+    uint256 amount;
+    require amount > 0;
+    erc20.transferFrom(sender, currentContract, amount);
+
+    uint256 fin_balance = totalSupply(pool_token);
+
+    assert init_balance == fin_balance, "airdrop shouldn't affect the total supply of any pool token";
+}
