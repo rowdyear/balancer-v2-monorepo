@@ -15,6 +15,7 @@ methods {
     isAllowlistedRewarder(address, address, address) envfree
     totalSupply(address) envfree
     balanceOf(address, address) envfree
+    totalEarned(address, address, address) envfree
 
     // envfreeing harness functions
     Harness_num_rewarders(address, address) returns uint256 envfree
@@ -278,6 +279,7 @@ rule airdrop_doesnt_affect_balances {
 
     // airdrop to the pool
     address sender;
+    require sender != currentContract;
     uint256 amount;
     require amount > 0;
     erc20.transferFrom(sender, currentContract, amount);
@@ -293,6 +295,7 @@ rule airdrop_doesnt_affect_total_supply_of_pool_tokens {
 
     // airdrop to the pool
     address sender;
+    require sender != currentContract;
     uint256 amount;
     require amount > 0;
     erc20.transferFrom(sender, currentContract, amount);
@@ -300,4 +303,39 @@ rule airdrop_doesnt_affect_total_supply_of_pool_tokens {
     uint256 fin_balance = totalSupply(pool_token);
 
     assert init_balance == fin_balance, "airdrop shouldn't affect the total supply of any pool token";
+}
+
+rule airdrop_doesnt_add_rewarders {
+    address pool_token;
+    address reward_token;
+    uint256 init_num_rewards = Harness_num_rewarders(pool_token, reward_token);
+
+    // airdrop to the pool
+    address sender;
+    require sender != currentContract;
+    uint256 amount;
+    require amount > 0;
+    erc20.transferFrom(sender, currentContract, amount);
+
+    uint256 fin_num_rewards = Harness_num_rewarders(pool_token, reward_token);
+
+    assert init_num_rewards == fin_num_rewards, "airdrop shouldn't add a rewarder";
+}
+
+rule airdrop_doesnt_update_time {
+    address pool_token;
+    address reward_token;
+    address rewarder;
+    uint256 init_last_update_time = Harness_getLastUpdateTime(pool_token, reward_token, rewarder);
+
+    // airdrop to the pool
+    address sender;
+    require sender != currentContract;
+    uint256 amount;
+    require amount > 0;
+    erc20.transferFrom(sender, currentContract, amount);
+
+    uint256 fin_last_update_time = Harness_getLastUpdateTime(pool_token, reward_token, rewarder);
+
+    assert init_last_update_time == fin_last_update_time, "airdrop shouldn't change the last update time";
 }
