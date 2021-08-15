@@ -11,10 +11,16 @@ methods {
     burn(address, uint256) => DISPATCHER(true)
     approve(address, uint256) => DISPATCHER(true)
 
+    verify(bytes32[], bytes32, bytes32) => NONDET
+    
+
+
     //envfreeing methods
     claimed(uint256, address) returns (bool) envfree
     seedAllocations(uint256, bytes32, uint256) envfree;
     erc.balanceOf(address) envfree;
+    claimWeek(address,uint256,uint256,bytes32[]) envfree;
+    verifyClaim(address, uint256, uint256, bytes32[]) envfree;
 }
 
 rule no_double_claim {
@@ -61,4 +67,32 @@ rule only_sender_can_profit {
     uint256 fin_balance = erc.balanceOf(user);
 
     assert fin_balance > init_balance => user == e.msg.sender;
+}
+
+rule capped_gains {
+    address user;
+    uint256 init_balance = erc.balanceOf(user);
+
+    address liquidityProvider;
+    uint256 week;
+    uint256 claimedBalance;
+    bytes32[] merkleProof;
+    claimWeek(liquidityProvider, week, claimedBalance, merkleProof);
+
+    uint256 fin_balance = erc.balanceOf(user);
+
+    assert fin_balance - init_balance <= claimedBalance, "a user cannot profit more than the claimed balance";
+}
+
+rule only_verified_claims_can_succeed {
+    address liquidityProvider;
+    uint256 week;
+    uint256 claimedBalance;
+    bytes32[] merkleProof;
+
+    bool verified = verifyClaim(liquidityProvider, week, claimedBalance, merkleProof);
+    claimWeek@withrevert(liquidityProvider, week, claimedBalance, merkleProof);
+    bool claimed = lastReverted;
+
+    assert !lastReverted => verified;
 }
