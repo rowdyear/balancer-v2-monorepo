@@ -17,10 +17,9 @@ methods {
 
     //envfreeing methods
     claimed(uint256, address) returns (bool) envfree
-    seedAllocations(uint256, bytes32, uint256) envfree;
     erc.balanceOf(address) envfree;
-    claimWeek(address,uint256,uint256,bytes32[]) envfree;
     verifyClaim(address, uint256, uint256, bytes32[]) envfree;
+    owner() returns address envfree;
 }
 
 rule no_double_claim {
@@ -37,15 +36,16 @@ rule no_double_claim {
 }
 
 rule no_double_seed {
+    env e;
     uint256 week;
     bytes32 root;
     uint256 amount;
-    seedAllocations(week, root, amount);
+    seedAllocations(e, week, root, amount);
 
     bytes32 root2;
     uint256 amount2;
 
-    seedAllocations@withrevert(week, root, amount);
+    seedAllocations@withrevert(e, week, root, amount);
 
     assert lastReverted, "cannot seed the same week twice";
 }
@@ -73,25 +73,42 @@ rule capped_gains {
     address user;
     uint256 init_balance = erc.balanceOf(user);
 
+    env e;
     address liquidityProvider;
     uint256 week;
     uint256 claimedBalance;
     bytes32[] merkleProof;
-    claimWeek(liquidityProvider, week, claimedBalance, merkleProof);
+    claimWeek(e, liquidityProvider, week, claimedBalance, merkleProof);
 
     uint256 fin_balance = erc.balanceOf(user);
 
     assert fin_balance - init_balance <= claimedBalance, "a user cannot profit more than the claimed balance";
 }
 
+rule only_owner_pays {
+    address user;
+    require user != owner() && user != currentContract;
+    uint256 init_balance = erc.balanceOf(user);
+
+    method f;
+    env e;
+    calldataarg a;
+    f(e, a);
+
+    uint256 fin_balance = erc.balanceOf(user);
+
+    assert fin_balance >= init_balance, "MerkleRedeem cannot take money from anyone but the owner";
+}
+
 rule only_verified_claims_can_succeed {
+    env e;
     address liquidityProvider;
     uint256 week;
     uint256 claimedBalance;
     bytes32[] merkleProof;
 
     bool verified = verifyClaim(liquidityProvider, week, claimedBalance, merkleProof);
-    claimWeek@withrevert(liquidityProvider, week, claimedBalance, merkleProof);
+    claimWeek@withrevert(e, liquidityProvider, week, claimedBalance, merkleProof);
     bool claimed = lastReverted;
 
     assert !lastReverted => verified;

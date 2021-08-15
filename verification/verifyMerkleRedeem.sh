@@ -5,4 +5,4 @@
   --smt_timeout 300 \
   --settings -postProcessCounterExamples=true \
   --cloud \
-  --msg "first rule of merkleredeem"
+  --msg "all rules"
