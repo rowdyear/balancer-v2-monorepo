@@ -6,6 +6,7 @@ find . -type f -name "*.sol" -exec sed -i 's/safeT/t/g' {} +
 # The above line creates name collision with safeERC20.sol, so we do not import it anymore
 perl -0777 -i -pe 's/import "pkg\/solidity-utils\/contracts\/openzeppelin\/SafeERC20\.sol";//g' pkg/distributors/contracts/MultiRewards.sol
 perl -0777 -i -pe 's/using SafeERC20 for IERC20;//g' pkg/distributors/contracts/MultiRewards.sol
+perl -0777 -i -pe 's/using SafeERC20 for IERC20;//g' pkg/distributors/contracts/MerkleRedeem.sol
 
 # virtualizing functions
 perl -0777 -i -pe 's/\) internal pure returns \(uint256\) {/\) internal view virtual returns \(uint256\) {/g' pkg/asset-manager-utils/contracts/RewardsAssetManager.sol
