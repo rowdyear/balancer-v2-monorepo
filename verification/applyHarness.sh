@@ -14,8 +14,9 @@ perl -0777 -i -pe 's/\) internal pure returns \(uint256\) {/\) internal view vir
 # removing irrelevant functions
 perl -0777 -i -pe 's/getVault\(\)\.managePoolBalance\(ops\);//g' pkg/asset-manager-utils/contracts/RewardsAssetManager.sol
 perl -0777 -i -pe 's/getVault\(\)\.manageUserBalance\(ops\);//g' pkg/distributors/contracts/MultiRewards.sol
+perl -0777 -i -pe 's/vault\.manageUserBalance\(ops\);//g' pkg/distributors/contracts/MerkleRedeem.sol
 perl -0777 -i -pe 's/callbackContract\.callback\(callbackData\);//g' pkg/distributors/contracts/MultiRewards.sol
-
+perl -0777 -i -pe 's/callbackContract\.distributorCallback\(callbackData\);//g' pkg/distributors/contracts/MerkleRedeem.sol
 
 # private to internal
 perl -0777 -i -pe 's/_capitalOut\(uint256 amount\) private {/_capitalOut\(uint256 amount\) internal {/g' pkg/asset-manager-utils/contracts/RewardsAssetManager.sol
