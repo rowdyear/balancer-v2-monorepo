@@ -24,4 +24,9 @@ perl -0777 -i -pe 's/_capitalIn\(uint256 amount\) private {/_capitalIn\(uint256 
 perl -0777 -i -pe 's/InvestmentConfig private _config/InvestmentConfig internal _config/g' pkg/asset-manager-utils/contracts/RewardsAssetManager.sol
 perl -0777 -i -pe 's/private _allowlist/internal _allowlist/g' pkg/distributors/contracts/MultiRewards.sol
 perl -0777 -i -pe 's/private _rewarders/internal _rewarders/g' pkg/distributors/contracts/MultiRewards.sol
+perl -0777 -i -pe 's/private _balances/internal _balances/g' pkg/distributors/contracts/MultiRewards.sol
 perl -0777 -i -pe 's/length\(AddressSet storage set\) internal view/length\(AddressSet storage set\) external view/g' pkg/solidity-utils/contracts/openzeppelin/EnumerableSet.sol
+
+# external to public
+perl -0777 -i -pe 's/claimWeeks\(address liquidityProvider, Claim\[\] memory claims\) external {/claimWeeks\(address liquidityProvider, Claim\[\] memory claims\) public {/g' pkg/distributors/contracts/MerkleRedeem.sol
+
