@@ -83,4 +83,8 @@ contract RewardsDistributorHarness is MultiRewards {
         return rewardData[pool][rewarder][rewardsToken].periodFinish;
     }
 
+    function Harness_getBalance(IERC20 pool_token, address user) public view returns (uint256) {
+        return _balances[pool_token][user];
+    }
+
 }

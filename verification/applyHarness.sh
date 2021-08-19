@@ -30,3 +30,5 @@ perl -0777 -i -pe 's/length\(AddressSet storage set\) internal view/length\(Addr
 # external to public
 perl -0777 -i -pe 's/claimWeeks\(address liquidityProvider, Claim\[\] memory claims\) external {/claimWeeks\(address liquidityProvider, Claim\[\] memory claims\) public {/g' pkg/distributors/contracts/MerkleRedeem.sol
 
+# removing a "graceful failure" require
+perl -0777 -i -pe 's/require\(amount > 0, "Cannot withdraw 0"\);//g' pkg/distributors/contracts/MultiRewards.sol

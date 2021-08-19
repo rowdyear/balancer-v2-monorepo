@@ -2,7 +2,7 @@
   --verify RewardsDistributorHarness:verification/MultiRewards.spec \
   --solc solc7.6 \
   --optimistic_loop \
-  --smt_timeout 300 \
+  --smt_timeout 600 \
   --settings -postProcessCounterExamples=true \
   --cloud \
   --msg "all rules"
