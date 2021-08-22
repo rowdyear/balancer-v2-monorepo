@@ -195,7 +195,7 @@ invariant applicable_rewards_greater_equal_to_last_update_time (env e, address p
         preserved getRewardWithCallback(address[] _, address _, bytes _) with (env e2) {
             require e2.block.timestamp == e.block.timestamp;
         }
-        preserved notifyRewardAmount(address _, address _, uint256 _) with (env e2) {
+        preserved notifyRewardAmount(address _, address _, uint256 _, address _) with (env e2) {
             require e2.block.timestamp == e.block.timestamp;
         }
     } 
