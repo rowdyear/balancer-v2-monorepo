@@ -33,3 +33,6 @@ perl -0777 -i -pe 's/claimWeeks\(address liquidityProvider, Claim\[\] memory cla
 
 # removing a "graceful failure" require
 perl -0777 -i -pe 's/require\(amount > 0, "Cannot withdraw 0"\);//g' pkg/distributors/contracts/MultiRewards.sol
+
+# Add a return value due to tool failure
+perl -0777 -i -pe 's/_revert\(Errors\.UNHANDLED_JOIN_KIND\);/_revert\(Errors\.UNHANDLED_JOIN_KIND\);\n\t\t\treturn _joinAllTokensInForExactBPTOut\(balances, userData\);/g' pkg/pool-weighted/contracts/BaseWeightedPool.sol
