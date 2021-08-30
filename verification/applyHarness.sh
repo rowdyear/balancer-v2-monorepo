@@ -27,6 +27,7 @@ perl -0777 -i -pe 's/private _allowlist/internal _allowlist/g' pkg/distributors/
 perl -0777 -i -pe 's/private _rewarders/internal _rewarders/g' pkg/distributors/contracts/MultiRewards.sol
 perl -0777 -i -pe 's/private _balances/internal _balances/g' pkg/distributors/contracts/MultiRewards.sol
 perl -0777 -i -pe 's/length\(AddressSet storage set\) internal view/length\(AddressSet storage set\) external view/g' pkg/solidity-utils/contracts/openzeppelin/EnumerableSet.sol
+perl -0777 -i -pe 's/private _rewards;/internal  _rewards;/g' pkg/distributors/contracts/RewardsScheduler.sol
 
 # external to public
 perl -0777 -i -pe 's/claimWeeks\(address liquidityProvider, Claim\[\] memory claims\) external {/claimWeeks\(address liquidityProvider, Claim\[\] memory claims\) public {/g' pkg/distributors/contracts/MerkleRedeem.sol
