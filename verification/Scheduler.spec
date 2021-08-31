@@ -10,7 +10,10 @@ methods {
     mint(address, uint256) => DISPATCHER(true)
     burn(address, uint256) => DISPATCHER(true)
     approve(address, uint256) => DISPATCHER(true)
+
+    // Envfreeing ERC20 methods
     erc20.balanceOf(address) returns uint256 envfree
+    balanceOf(address) returns uint256 envfree
 
     getRewardId(address, address, address, uint256) returns bytes32 => CONSTANT
 
@@ -125,7 +128,7 @@ rule no_double_start_reward {
     assert lastReverted, "cannot start the same reward twice";
 }
 
-rule sched_then_atarting_reward_nets_zero_balance {
+rule sched_then_starting_reward_nets_zero_balance {
     uint256 init_balance = erc20.balanceOf(currentContract);
 
     env e;
@@ -140,4 +143,28 @@ rule sched_then_atarting_reward_nets_zero_balance {
 
     uint256 fin_balance = erc20.balanceOf(currentContract);
     assert fin_balance == init_balance, "scheduling then claiming a reward should not affect the balance of the scheduler";
+}
+
+rule only_way_to_lose_money_is_start_reward {
+    uint256 init_balance = erc20.balanceOf(currentContract);
+
+    method f;
+    env e;
+    calldataarg a;
+    f(e, a);
+
+    uint256 fin_balance = erc20.balanceOf(currentContract);
+    assert fin_balance < init_balance => f.selector == startRewards(bytes32[]).selector || f.selector == Harness_startReward(bytes32).selector, 
+        "the only way the scheduler loses money is by starting rewards";
+}
+
+rule can_schedule_only_in_future {
+    env e;
+    require e.msg.sender != currentContract;
+    address pool;
+    uint256 amount;
+    uint256 time;
+    scheduleReward@withrevert(e, pool, erc20, amount, time);
+
+    assert e.block.timestamp >= time => lastReverted, "A user can only schedule rewards for the future";
 }
