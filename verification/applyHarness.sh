@@ -31,6 +31,8 @@ perl -0777 -i -pe 's/private _rewards;/internal  _rewards;/g' pkg/distributors/c
 
 # external to public
 perl -0777 -i -pe 's/claimWeeks\(address liquidityProvider, Claim\[\] memory claims\) external {/claimWeeks\(address liquidityProvider, Claim\[\] memory claims\) public {/g' pkg/distributors/contracts/MerkleRedeem.sol
+perl -0777 -i -pe 's/function startRewards\(bytes32\[\] calldata rewardIds\) external {/function startRewards\(bytes32\[\] memory rewardIds\) public {/g' pkg/distributors/contracts/RewardsScheduler.sol
+
 
 # removing a "graceful failure" require
 perl -0777 -i -pe 's/require\(amount > 0, "Cannot withdraw 0"\);//g' pkg/distributors/contracts/MultiRewards.sol

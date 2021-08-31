@@ -21,4 +21,10 @@ contract SchedulerHarness is RewardsScheduler {
     function Harness_getRewardStartTime(bytes32 rewardId) external view returns (uint256) {
         return _rewards[rewardId].startTime;
     }
+
+    function Harness_startReward(bytes32 rewardId) external {
+        bytes32[] memory rewardIds = new bytes32[](1);
+        rewardIds[0] = rewardId;
+        startRewards(rewardIds);
+    }
 }
