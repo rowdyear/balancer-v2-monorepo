@@ -28,7 +28,7 @@
     "test": "yarn workspaces foreach --parallel --verbose run test"
   },
   "workspaces": [
-    "pkg/*",
-    "pvt/*"
+    "contracts/pkg/*",
+    "contracts/pvt/*"
   ]
 }
